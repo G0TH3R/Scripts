@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Check if the first argument is empty
+if [[ -z $1 ]]; then
+    # If empty, display usage and exit with non-zero status code
+    current=$(tmux display -p "#S")
+    echo "usage: tmux-sendall SESSION [COMMAND]"
+    if [[ -n $current ]]; then
+        echo "current session: $current"
+    fi
+    exit 1
+else
+    # Assign the first argument to the variable 'session'
+    session="$1"
+fi
+
+# Check if the second argument is provided
+if [[ -n $2 ]]; then
+    # If provided, assign the second argument to the variable 'message'
+    message="$2"
+else
+    # If not provided, prompt the user for the command to send
+    read -p "send cmd to session $session: " message
+    if [[ -z $message ]]; then
+        # If the user didn't enter any command, exit with non-zero status code
+        exit 1;
+    fi
+fi
+
+# Function to send a command to a window in the tmux session
+function sendwindow() {
+    # $1=target, $2=command
+
+    # Enable pane synchronization for the target window
+    tmux setw -t $1 synchronize-panes
+
+    # Send the specified command to the target window without waiting for Enter
+    tmux send-keys -lt "$1" "$2"
+
+    # Send the Enter key to the target window to execute the command
+    tmux send-keys -t "$1" "Enter"
+
+    # Disable pane synchronization
+    tmux setw -t $1 synchronize-panes off
+}
+
+# Export the 'sendwindow' function to make it accessible to the subshell executed by 'xargs'
+export -f sendwindow
+
+# Get a list of windows for the specified session, extract window numbers with 'cut',
+# and send them as arguments to the 'sendwindow' function using 'xargs'
+tmux list-windows -t $session | cut -d: -f1 | xargs -I{} bash -c "sendwindow '$session:{}' '$message'"

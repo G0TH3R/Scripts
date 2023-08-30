@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Check if tmux is installed
+if ! command -v tmux &>/dev/null; then
+    echo "tmux is not installed. Please install tmux first."
+    exit 1
+fi
+
+# Check if an existing tmux session named "tOPS" exists
+if tmux has-session -t tOPS 2>/dev/null; then
+    # Kill the existing "tOPS" session
+    tmux kill-session -t tOPS
+fi
+
+# Create a new tmux session named "tOPS"
+tmux new-session -d -s tOPS -n "VPN"
+
+# Split the window vertically
+tmux split-window -h -t tOPS:0
+tmux send-keys -t tOPS:0.0 'off_c' C-m
+tmux split-window -v -t tOPS:0.1
+
+
+tmux new-window -t tOPS:1 -n "RECON"
+tmux split-window -h -t tOPS:1
+
+
+tmux new-window -t tOPS:2 -n "ATK"
+tmux split-window -h -t tOPS:2
+tmux split-window -v -t tOPS:2.1
+tmux split-window -v -t tOPS:2.2
+
+
+# Attach to the newly created session
+tmux attach-session -t tOPS
