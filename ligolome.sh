@@ -1,7 +1,5 @@
 #!/bin/bash
-"""
-This Bash script sets up a tunnel interface named "ligolo" and configures a proxy server using the ligolo-proxy tool. It starts by cleaning up any existing "ligolo" interface before creating a new tunnel interface with tuntap. The script then waits for the tun0 interface to acquire an IP address, retrieves that IP using the get_tun0_ip function, and validates if it's successfully obtained. If successful, it launches the proxy on port 443, using the retrieved IP address. Finally, the script confirms that the tunnel and proxy setup is complete.
-"""
+# This Bash script sets up a tunnel interface named "ligolo" and configures a proxy server using the ligolo-proxy tool. It starts by cleaning up any existing "ligolo" interface before creating a new tunnel interface with tuntap. The script then waits for the tun0 interface to acquire an IP address, retrieves that IP using the get_tun0_ip function, and validates if it's successfully obtained. If successful, it launches the proxy on port 443, using the retrieved IP address. Finally, the script confirms that the tunnel and proxy setup is complete.
 
 # Function to get IP address of tun0
 get_tun0_ip() {
